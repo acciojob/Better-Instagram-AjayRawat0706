@@ -1,36 +1,29 @@
-let images = document.querySelectorAll(".image");
+let draggedElement = null;
 
-images.forEach((img) => {
-    img.addEventListener("dragstart", function(event) {
-        event.dataTransfer.setData("imageId", event.target.id);
-        event.target.classList.add("selected");
-    });
+document.querySelectorAll(".image").forEach((div) => {
+  const img = div.querySelector("img");
 
-    img.addEventListener("dragend", function(event) {
-        event.target.classList.remove("selected");
-    });
-});
+  // Start dragging
+  img.addEventListener("dragstart", (e) => {
+    draggedElement = e.target;
+  });
 
-document.addEventListener("dragover", function(event) {
-    event.preventDefault();
-});
+  // Allow drop on the container div
+  div.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
 
-document.addEventListener("drop", function(event) {
-    event.preventDefault();
+  // Handle drop and swap image sources
+  div.addEventListener("drop", (e) => {
+    e.preventDefault();
 
-    var draggedId = event.dataTransfer.getData("imageId");
-    var draggedImg = document.getElementById(draggedId);
+    const targetImg = div.querySelector("img");
 
-   
-    var targetImg = event.target.classList.contains("image") ? event.target : event.target.closest(".image");
-
-   
-    if (targetImg && targetImg.id !== draggedImg.id) {
-        
-        let draggedStyle = window.getComputedStyle(draggedImg).backgroundImage;
-        let targetStyle = window.getComputedStyle(targetImg).backgroundImage;
-
-        targetImg.style.backgroundImage = draggedStyle;
-        draggedImg.style.backgroundImage = targetStyle;
+    if (draggedElement && draggedElement !== targetImg) {
+      // Swap the src attributes of dragged and target images
+      const tempSrc = draggedElement.src;
+      draggedElement.src = targetImg.src;
+      targetImg.src = tempSrc;
     }
+  });
 });
